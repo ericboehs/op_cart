@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  description: MyText
+  image_url: MyString
+  price: 1
+  allow_purchases: false
+  charge_taxes: false
+  user_id: 
+
+two:
+  name: MyString
+  description: MyText
+  image_url: MyString
+  price: 1
+  allow_purchases: false
+  charge_taxes: false
+  user_id: 
