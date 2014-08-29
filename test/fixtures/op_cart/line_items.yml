@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  unit_price: 1
+  quantity: 1
+  sellable_snapshot: 
+  sellable_id: 
+  sellable_type: Sellable
+  order_id: 
+
+two:
+  unit_price: 1
+  quantity: 1
+  sellable_snapshot: 
+  sellable_id: 
+  sellable_type: Sellable
+  order_id: 
