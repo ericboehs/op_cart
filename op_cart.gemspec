@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ["ericboehs@gmail.com"]
   s.homepage    = "https://github.com/ericboehs/op_cart"
   s.summary     = "Opinionated cart engine for Ruby on Rails"
-  s.description = "OpCart makes things simple through inflexibility and lack of features"
+  s.description = "Opinionated cart engine for Ruby on Rails"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
