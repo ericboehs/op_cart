@@ -1,5 +1,7 @@
 class CreateOpCartLineItems < ActiveRecord::Migration
   def change
+    enable_extension :hstore
+
     create_table :op_cart_line_items do |t|
       t.integer    :unit_price,                               null: false
       t.integer    :quantity,                                 null: false
