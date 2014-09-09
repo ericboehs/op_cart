@@ -1,6 +1,7 @@
 class CreateOpCartOrders < ActiveRecord::Migration
   def change
     create_table :op_cart_orders do |t|
+      t.string :email,                 null: false
       t.integer :total,                null: false
       t.integer :tax_amount,        default: 0
       t.string :status,                null: false

@@ -3,10 +3,21 @@ OpCart =
       $number = $ '#order_credit_card_number'
       $expiry = $ '#order_credit_card_expiry'
       $cvc    = $ '#order_credit_card_cvc'
+      $city   = $ '#order_shipping_address_city'
+      $state  = $ '#order_shipping_address_state'
+      $zip    = $ '#order_shipping_address_zip_code'
 
       $number.payment 'formatCardNumber'
       $expiry.payment 'formatCardExpiry'
       $cvc.payment 'formatCardCVC'
+
+      $zip.change ->
+        if $zip.val().length == 5
+          $.ziptastic $zip.val(), (country, state, state_short, city, zip) ->
+            $city.val city
+            $state.val state
+          $city.prop "disabled", false
+          $state.prop "disabled", false
 
       @stripeCreateToken()
 

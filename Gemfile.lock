@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    op_cart (0.0.3)
+    op_cart (0.0.5)
       rails (~> 4.2.0.b1)
       slim-rails (~> 2.1.5)
       stripe (~> 1.15.0)
