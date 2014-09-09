@@ -1,29 +1,45 @@
+script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.payment/1.0.2/jquery.payment.min.js" type="text/javascript"
 script src="https://js.stripe.com/v2/" type="text/javascript"
 
 javascript:
   Stripe.setPublishableKey('#{Rails.configuration.stripe[:publishable_key]}')
 
--# Hack to display products temporarily
-p = @product.name
-p = number_to_currency @product.price / 100
+- if @products.any?
+  -# Hack to display products temporarily
+  .new_order
+    h2 Items in Order
+    ul style="list-style-type: none"
+      - @products.each do |product|
+        li
+          p = product.name
+          p = product.description
+          p = number_to_currency product.price / 100
 
-form#payment-form action="/store/orders" method="POST"
-  = hidden_field_tag :authenticity_token, form_authenticity_token
-  = hidden_field_tag :product_id, @product.id
+  = simple_form_for @order do |f|
+    span.payment-errors
+    p
+      h2 Your Information
+      = f.input :email, autofocus: true, input_html: { autocomplete: 'email' }
 
-  span.payment-errors
-  .form-row
-    label
-      span Card Number
-      input data-stripe="number" size="20" type="text" /
-  .form-row
-    label
-      span Expiration (MM/YYYY)
-      input data-stripe="exp-month" size="2" type="text" /
-    span /
-    input data-stripe="exp-year" size="4" type="text" /
-  .form-row
-    label
-      span CVC
-      input data-stripe="cvc" size="4" type="text" /
-  button type="submit"  Submit Payment
+    p
+      h2 Shipping Address
+      = f.simple_fields_for :shipping_address do |sa|
+        = sa.input :full_name, input_html: { autocomplete: 'name' }
+        = sa.input :address, input_html: { autocomplete: 'street-address' }
+        = sa.input :zip_code, input_html: { autocomplete: 'postal-code' }
+        = sa.input :city, disabled: true, input_html: { autocomplete: 'city' }
+        = sa.input :state, disabled: true, input_html: { autocomplete: 'state' }
+
+    p
+      h2 Card Details
+      = f.simple_fields_for :credit_card do |c|
+        = c.input :number, input_html: { autocomplete: 'cc-number' }
+        = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
+        = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
+
+    = hidden_field_tag :product_id, @products.first.id
+
+    .form-actions
+      = f.button :button, "Submit Payment"
+- else
+  p Add an item to your order.

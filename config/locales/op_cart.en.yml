@@ -1,0 +1,15 @@
+en:
+  simple_form:
+    placeholders:
+      order:
+        email: "Email"
+        shipping_address:
+          full_name: "Full Name"
+          address: "Street Address"
+          zip_code: "Zip Code"
+          city: "City"
+          state: "State"
+        credit_card:
+          number: "Card Number"
+          expiry: 'MM/YY'
+          cvc: 'CVC'

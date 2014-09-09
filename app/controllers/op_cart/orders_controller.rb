@@ -1,16 +1,25 @@
 module OpCart
   class OrdersController < ApplicationController
     def new
-      @product = Product.first # Temp hack to display first product as order
+      @products = [Product.first] # Temp hack to display first product as order
+      @order = Order.new
     end
 
     def create
       product = Product.find params[:product_id]
 
-      charge = Stripe::Charge.create(
-        amount:   product.price,
+      customer = Stripe::Customer.create(
+        card: params[:stripeToken],
+        email: params[:order][:email]
+      )
+
+      # TODO Create Order w/ Line Items
+      # TODO Create shipping address
+
+      Stripe::Charge.create(
+        amount: product.price,
         currency: "usd",
-        card:     params[:stripeToken]
+        customer: customer.id
       )
 
       redirect_to new_order_path, notice: 'Thank you for your purchase'
