@@ -1,5 +1,6 @@
 OpCart =
   ready: ->
+    if $('body').is '.op_cart-orders-new'
       $number = $ '#order_credit_card_number'
       $expiry = $ '#order_credit_card_expiry'
       $cvc    = $ '#order_credit_card_cvc'
