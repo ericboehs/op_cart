@@ -3,13 +3,13 @@ en:
     placeholders:
       order:
         email: "Email"
-        shipping_address:
+        shipping_addresses:
           full_name: "Full Name"
           address: "Street Address"
           zip_code: "Zip Code"
           city: "City"
           state: "State"
-        credit_card:
+        credit_cards:
           number: "Card Number"
           expiry: 'MM/YY'
           cvc: 'CVC'

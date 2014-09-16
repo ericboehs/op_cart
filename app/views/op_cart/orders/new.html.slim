@@ -1,21 +1,30 @@
-script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.payment/1.0.2/jquery.payment.min.js" type="text/javascript"
-script src="https://js.stripe.com/v2/" type="text/javascript"
-
-javascript:
-  Stripe.setPublishableKey('#{Rails.configuration.stripe[:publishable_key]}')
-
-- if @products.any?
-  -# Hack to display products temporarily
+- if @products.present?
   .new_order
-    h2 Items in Order
+    h2 Purchasble Items
     ul style="list-style-type: none"
       - @products.each do |product|
         li
           p = product.name
           p = product.description
           p = number_to_currency product.price / 100
+          p
+            a onclick="OpCart.addItemToOrder(#{product.id}, 1)" style="cursor:pointer"
+              | Add to Order
 
-  = simple_form_for @order do |f|
+    h2 Items in Order
+    ul style="list-style-type: none"
+      - @products.each do |product|
+        li id="#{dom_id product, 'line_item'}"
+          p = product.name
+          p = number_to_currency product.price / 100
+          p.quantity
+            span.name Quantity:&nbsp;
+            span.value 0
+          p
+            a onclick="OpCart.removeItemFromOrder(#{product.id})" style="cursor:pointer"
+              | Remove
+
+  = simple_form_for @order, data: { stripe_key: Rails.configuration.stripe[:publishable_key] } do |f|
     span.payment-errors
     p
       h2 Your Information
@@ -23,7 +32,7 @@ javascript:
 
     p
       h2 Shipping Address
-      = f.simple_fields_for :shipping_address do |sa|
+      = f.simple_fields_for :shipping_addresses do |sa|
         = sa.input :full_name, input_html: { autocomplete: 'name' }
         = sa.input :address, input_html: { autocomplete: 'street-address' }
         = sa.input :zip_code, input_html: { autocomplete: 'postal-code' }
@@ -32,14 +41,15 @@ javascript:
 
     p
       h2 Card Details
-      = f.simple_fields_for :credit_card do |c|
+      = f.simple_fields_for :credit_cards do |c|
         = c.input :number, input_html: { autocomplete: 'cc-number' }
         = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
         = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
 
-    = hidden_field_tag :product_id, @products.first.id
+    = f.input :card_token, as: :hidden
+    = hidden_field :line_items, :quantities, value: "{}"
 
     .form-actions
       = f.button :button, "Submit Payment"
 - else
-  p Add an item to your order.
+  p Add an item to your order to begin.

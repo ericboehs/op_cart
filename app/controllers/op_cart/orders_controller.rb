@@ -1,32 +1,50 @@
 module OpCart
   class OrdersController < ApplicationController
+    # before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
+    before_action :set_order, only: [:show, :edit, :update, :destroy]
+
     def new
-      @products = [Product.first] # Temp hack to display first product as order
+      @products = Product.all
       @order = Order.new
     end
 
     def create
-      product = Product.find params[:product_id]
+      @order = Order.new order_params
+      @order.status = :new
+      @order.user = current_user || User.first #TODO: Create a user from email
+      add_line_items
 
-      customer = Stripe::Customer.create(
-        card: params[:stripeToken],
-        email: params[:order][:email]
-      )
-
-      # TODO Create Order w/ Line Items
-      # TODO Create shipping address
-
-      Stripe::Charge.create(
-        amount: product.price,
-        currency: "usd",
-        customer: customer.id
-      )
-
-      redirect_to new_order_path, notice: 'Thank you for your purchase'
-    rescue Stripe::CardError => e
-      # The card has been declined or some other error has occurred
-      @error = e
-      render :new
+      if @order.save
+        redirect_to @order, notice: 'Thank you for your purchase'
+      else
+        render :new
+      end
     end
+
+    def show
+    end
+
+    private
+
+    def set_order
+      # TODO prevent viewing of others' orders
+      # @order = current_user.orders.find params[:id]
+      @order = Order.find params[:id]
+    end
+
+    def order_params
+      params.require(:order).permit(:email, :card_token,
+        { shipping_address: [ :full_name, :address, :zip_code, :city, :state ] }
+      )
+    end
+
+    def add_line_items
+      li_quantities_json = JSON.parse params[:line_items][:quantities]
+      li_quantities_json.each do |product_id, quantity|
+        @order.line_items <<
+          LineItem.new(sellable: Product.find(product_id), quantity: quantity)
+      end
+    end
+
   end
 end

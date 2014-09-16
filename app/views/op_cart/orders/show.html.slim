@@ -1,0 +1,22 @@
+.new_order
+  h2 Items in Order
+  ul
+    - @order.line_items.each do |line_item|
+      li id="#{dom_id line_item}"
+        p = line_item.sellable.name
+        p.quantity
+          = line_item.quantity
+          | &nbsp;@&nbsp;
+          = number_to_currency line_item.unit_price / 100
+          | &nbsp;=&nbsp;
+          = number_to_currency line_item.total / 100
+    li
+      p Order Total: #{number_to_currency @order.total / 100}
+
+  p
+    h2 Your Information
+    = @order.email
+  p
+    h2 Shipping Address
+    p 123 N Todo Street
+    p Edmond, Oklahoma 73013
