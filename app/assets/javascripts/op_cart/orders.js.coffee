@@ -22,7 +22,8 @@
 
       @stripeCreateToken()
 
-  load: -> @ready()
+  load: ->
+    OpCart.ready()
 
   stripeCreateToken: ->
     $("#new_order").submit (event) ->
