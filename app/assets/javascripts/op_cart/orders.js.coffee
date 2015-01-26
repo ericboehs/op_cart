@@ -1,32 +1,36 @@
 @OpCart =
   ready: ->
     if $('body').is '.op_cart-orders-new, .op_cart-orders-create'
-      $city   = $ '#order_shipping_address_city'
-      $state  = $ '#order_shipping_address_state'
-      $zip    = $ '#order_shipping_address_zip_code'
+      $number = $ '#credit_card_number'
+      $expiry = $ '#credit_card_expiry'
+      $cvc    = $ '#credit_card_cvc'
 
-      $number = $ '#order_credit_cards_number'
-      $expiry = $ '#order_credit_cards_expiry'
-      $cvc    = $ '#order_credit_cards_cvc'
-
-      $zip.change ->
-        if $zip.val().length == 5
-          $.ziptastic $zip.val(), (country, state, state_short, city, zip) ->
-            $city.val city
-            $state.val state
-          $city.prop "disabled", false
-          $state.prop "disabled", false
-
-      if $('#card_details')
+      if $('#card_form_inputs')
         $number.payment 'formatCardNumber'
         $expiry.payment 'formatCardExpiry'
         $cvc.payment 'formatCardCVC'
 
+      $('#shipping_address_postal_code').change => @updateZipFields()
+
+      @updateZipFields()
       @updateDisplayedQuantities()
       @stripeCreateToken()
 
   load: ->
     OpCart.ready()
+
+  updateZipFields: ->
+    $locality = $ '#shipping_address_locality'
+    $region   = $ '#shipping_address_region'
+    $zip      = $ '#shipping_address_postal_code'
+
+    if $zip.val().length == 5
+      $.ziptastic $zip.val(), (country, region, region_short, locality, zip) ->
+        $locality.val locality
+        $region.val region
+      $locality.prop "disabled", false
+      $region.prop "disabled", false
+
 
   stripeCreateToken: ->
     $("#new_order").submit (event) ->
@@ -35,11 +39,11 @@
 
       Stripe.setPublishableKey $form.data("stripe-key")
 
-      expiration = $("#order_credit_cards_expiry").payment "cardExpiryVal"
+      expiration = $("#credit_card_expiry").payment "cardExpiryVal"
 
       Stripe.card.createToken
-        number: $("#order_credit_cards_number").val()
-        cvc: $("#order_credit_cards_cvc").val()
+        number: $("#credit_card_number").val()
+        cvc: $("#credit_card_cvc").val()
         exp_month: expiration.month || 0
         exp_year: expiration.year || 0
       , OpCart.stripeResponseHandler
@@ -78,7 +82,7 @@
     $quantity.html @lineItemQuantity(productId)
 
   lineItemQuantity: (productId, quantity) ->
-    $liQuantities = $ '#line_items_quantities'
+    $liQuantities = $ '#line_items_quantities_json'
     liQuantities = JSON.parse $liQuantities.val() || "{}"
 
     if quantity >= 0

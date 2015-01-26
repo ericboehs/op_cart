@@ -18,5 +18,7 @@
     = @order.user.email
   p
     h2 Shipping Address
-    p 123 N Todo Street
-    p Edmond, Oklahoma 73013
+    - sa = @order.shipping_address
+    p = sa.full_name
+    p = sa.street
+    p = "#{sa.locality}, #{sa.region} #{sa.postal_code}"

@@ -26,7 +26,7 @@
     span.payment-errors
     p
       h2 Your Information
-      - if current_user.present?
+      - if signed_in?
         strong Email:&nbsp;
         span = current_user.email
       - else
@@ -36,25 +36,28 @@
 
     p
       h2 Shipping Address
-      = f.simple_fields_for :shipping_address do |sa|
-        = sa.input :full_name, input_html: { autocomplete: 'name' }
-        = sa.input :address, input_html: { autocomplete: 'street-address' }
-        = sa.input :zip_code, input_html: { autocomplete: 'postal-code' }
-        = sa.input :city, disabled: true, input_html: { autocomplete: 'city' }
-        = sa.input :state, disabled: true, input_html: { autocomplete: 'state' }
+      = simple_fields_for :shipping_address do |sa|
+        - focus_name = signed_in? ? true : false
+        = sa.input :full_name, autofocus: focus_name, input_html: { autocomplete: 'name' }
+        = sa.input :street, input_html: { autocomplete: 'street-address' }
+        = sa.input :postal_code, input_html: { autocomplete: 'postal-code' }
+        = sa.input :locality, disabled: true, input_html: { autocomplete: 'city' }
+        = sa.input :region, disabled: true, input_html: { autocomplete: 'state' }
 
-    p#card_details
+    p
       h2 Card Details
       - if f.object.card_token.present?
         span Card information already provided.
       - else
-        = f.simple_fields_for :credit_cards do |c|
-          = c.input :number, input_html: { autocomplete: 'cc-number' }
-          = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
-          = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
+        #card_form_inputs
+          = simple_fields_for :credit_card do |c|
+            = c.input :number, input_html: { autocomplete: 'cc-number' }
+            = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
+            = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
 
+    = simple_fields_for :line_items do |li|
+      = li.input :quantities_json, as: :hidden
     = f.input :card_token, as: :hidden
-    = hidden_field :line_items, :quantities, value: params.fetch(:line_items, {}).fetch(:quantities, {})
 
     .form-actions
       = f.button :button, "Submit Payment"

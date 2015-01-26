@@ -1,7 +1,7 @@
 module OpCart
   class Order < ActiveRecord::Base
     has_many :line_items
-    has_one :shipping_address
+    belongs_to :shipping_address
     belongs_to :user
 
     accepts_nested_attributes_for :line_items
