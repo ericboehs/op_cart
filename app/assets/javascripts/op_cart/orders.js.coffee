@@ -1,16 +1,13 @@
 @OpCart =
   ready: ->
-    if $('body').is '.op_cart-orders-new'
+    if $('body').is '.op_cart-orders-new, .op_cart-orders-create'
+      $city   = $ '#order_shipping_address_city'
+      $state  = $ '#order_shipping_address_state'
+      $zip    = $ '#order_shipping_address_zip_code'
+
       $number = $ '#order_credit_cards_number'
       $expiry = $ '#order_credit_cards_expiry'
       $cvc    = $ '#order_credit_cards_cvc'
-      $city   = $ '#order_shipping_addresses_city'
-      $state  = $ '#order_shipping_addresses_state'
-      $zip    = $ '#order_shipping_addresses_zip_code'
-
-      $number.payment 'formatCardNumber'
-      $expiry.payment 'formatCardExpiry'
-      $cvc.payment 'formatCardCVC'
 
       $zip.change ->
         if $zip.val().length == 5
@@ -20,6 +17,12 @@
           $city.prop "disabled", false
           $state.prop "disabled", false
 
+      if $('#card_details')
+        $number.payment 'formatCardNumber'
+        $expiry.payment 'formatCardExpiry'
+        $cvc.payment 'formatCardCVC'
+
+      @updateDisplayedQuantities()
       @stripeCreateToken()
 
   load: ->
@@ -50,11 +53,12 @@
       if response.error
         errorMessage = response.error.message
       else
-        errorMessage = 'Email or shipping information missing'
+        errorMessage = 'Email or shipping information missing' #TODO: what else is missing?
       $form.find(".payment-errors").text errorMessage
       $form.find("button").prop "disabled", false
     else
       $('#order_card_token').val response.id
+      $('#order_details').remove()
       $form.get(0).submit()
 
   addItemToOrder: (productId, quantity) ->
@@ -65,6 +69,9 @@
   removeItemFromOrder: (productId) ->
     @lineItemQuantity productId, 0
     @updateDisplayedQuantity productId
+
+  updateDisplayedQuantities: ->
+    $('li[data-product-id]').each -> OpCart.updateDisplayedQuantity $(@).data('product-id')
 
   updateDisplayedQuantity: (productId) ->
     $quantity = $ "#line_item_product_#{productId} .quantity .value"
@@ -82,4 +89,3 @@
 
 $ -> OpCart.ready()
 $(document).on 'page:load', OpCart.load
-

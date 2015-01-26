@@ -3,13 +3,12 @@
     h2 Purchasble Items
     ul style="list-style-type: none"
       - @products.each do |product|
-        li
+        li id="#{dom_id product}" data-product-id=(product.id)
           p = product.name
           p = product.description
           p = number_to_currency product.price / 100
           p
-            a onclick="OpCart.addItemToOrder(#{product.id}, 1)" style="cursor:pointer"
-              | Add to Order
+            a href="#" onclick="OpCart.addItemToOrder(#{product.id}, 1); return false" Add to Order
 
     h2 Items in Order
     ul style="list-style-type: none"
@@ -21,33 +20,41 @@
             span.name Quantity:&nbsp;
             span.value 0
           p
-            a onclick="OpCart.removeItemFromOrder(#{product.id})" style="cursor:pointer"
-              | Remove
+            a href="#" onclick="OpCart.removeItemFromOrder(#{product.id}); return false" Remove
 
   = simple_form_for @order, data: { stripe_key: Rails.configuration.stripe[:publishable_key] } do |f|
     span.payment-errors
     p
       h2 Your Information
-      = f.input :email, autofocus: true, input_html: { autocomplete: 'email' }
+      - if current_user.present?
+        strong Email:&nbsp;
+        span = current_user.email
+      - else
+        = simple_fields_for :user do |fu|
+          = fu.input :email, autofocus: true, input_html: { autocomplete: 'email' }
+          = fu.input :password
 
     p
       h2 Shipping Address
-      = f.simple_fields_for :shipping_addresses do |sa|
+      = f.simple_fields_for :shipping_address do |sa|
         = sa.input :full_name, input_html: { autocomplete: 'name' }
         = sa.input :address, input_html: { autocomplete: 'street-address' }
         = sa.input :zip_code, input_html: { autocomplete: 'postal-code' }
         = sa.input :city, disabled: true, input_html: { autocomplete: 'city' }
         = sa.input :state, disabled: true, input_html: { autocomplete: 'state' }
 
-    p
+    p#card_details
       h2 Card Details
-      = f.simple_fields_for :credit_cards do |c|
-        = c.input :number, input_html: { autocomplete: 'cc-number' }
-        = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
-        = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
+      - if f.object.card_token.present?
+        span Card information already provided.
+      - else
+        = f.simple_fields_for :credit_cards do |c|
+          = c.input :number, input_html: { autocomplete: 'cc-number' }
+          = c.input :expiry, input_html: { autocomplete: 'cc-exp' }
+          = c.input :cvc, input_html: { autocomplete: 'cc-csc' }
 
     = f.input :card_token, as: :hidden
-    = hidden_field :line_items, :quantities, value: "{}"
+    = hidden_field :line_items, :quantities, value: params.fetch(:line_items, {}).fetch(:quantities, {})
 
     .form-actions
       = f.button :button, "Submit Payment"

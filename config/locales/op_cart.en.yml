@@ -3,7 +3,7 @@ en:
     placeholders:
       order:
         email: "Email"
-        shipping_addresses:
+        shipping_address:
           full_name: "Full Name"
           address: "Street Address"
           zip_code: "Zip Code"
