@@ -75,10 +75,10 @@
     @updateDisplayedQuantity productId
 
   updateDisplayedQuantities: ->
-    $('li[data-product-id]').each -> OpCart.updateDisplayedQuantity $(@).data('product-id')
+    $('[data-product-id]').each -> OpCart.updateDisplayedQuantity $(@).data('product-id')
 
   updateDisplayedQuantity: (productId) ->
-    $quantity = $ "#line_item_product_#{productId} .quantity .value"
+    $quantity = $ "#line_item_product_#{productId} .quantity"
     $quantity.html @lineItemQuantity(productId)
 
   lineItemQuantity: (productId, quantity) ->
