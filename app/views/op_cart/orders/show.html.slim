@@ -1,24 +1,25 @@
-.new_order
-  h2 Items in Order
-  ul
-    - @order.line_items.each do |line_item|
-      li id="#{dom_id line_item}"
-        p = line_item.sellable.name
-        p.quantity
-          = line_item.quantity
-          | &nbsp;@&nbsp;
-          = number_to_currency line_item.unit_price / 100
-          | &nbsp;=&nbsp;
-          = number_to_currency line_item.total / 100
-    li
-      p Order Total: #{number_to_currency @order.total / 100}
+.op-cart_content
+  .op-cart_new-order
+    h2 Items in Order
+    ul.op-cart_items-in-order
+      - @order.line_items.each do |line_item|
+        li id="#{dom_id line_item}"
+          p = line_item.sellable.name
+          p.quantity
+            = line_item.quantity
+            | &nbsp;@&nbsp;
+            = number_to_currency line_item.unit_price / 100
+            | &nbsp;=&nbsp;
+            = number_to_currency line_item.total / 100
+      li
+        p Order Total: #{number_to_currency @order.total / 100}
 
-  p
-    h2 Your Information
-    = @order.user.email
-  p
-    h2 Shipping Address
-    - sa = @order.shipping_address
-    p = sa.full_name
-    p = sa.street
-    p = "#{sa.locality}, #{sa.region} #{sa.postal_code}"
+    .op-cart_your-information
+      h2 Your Information
+      = @order.user.email
+    .op-cart_shipping-address
+      h2 Shipping Address
+      - sa = @order.shipping_address
+      p = sa.full_name
+      p = sa.street
+      p = "#{sa.locality}, #{sa.region} #{sa.postal_code}"
