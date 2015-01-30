@@ -67,7 +67,7 @@ module OpCart
       end
 
       unless signed_in?
-        sign_in User.create name: params[:order][:shipping_address][:full_name],
+        sign_in User.create name: params[:shipping_address][:full_name],
           email: params[:user][:email], password: params[:user][:password],
           password_confirmation: params[:user][:password]
       end
