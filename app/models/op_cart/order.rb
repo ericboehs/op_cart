@@ -30,11 +30,13 @@ module OpCart
 
       # TODO Create shipping address
 
-      Stripe::Charge.create(
+      charge = Stripe::Charge.create(
         amount: total,
         currency: "usd",
         customer: customer.id
       )
+      #TODO: Mark order as charged
+      # update_attribute :charged, true if charge.captured
     rescue Stripe::CardError => e
       # The card has been declined or some other error has occurred
       self.errors.add e
