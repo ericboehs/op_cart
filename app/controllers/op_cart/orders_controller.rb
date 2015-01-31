@@ -35,7 +35,7 @@ module OpCart
     end
 
     def order_params
-      params.require(:order).permit :email, :password, :card_token
+      params.require(:order).permit :email, :password, :processor_token
     end
 
     def line_items_params

@@ -4,6 +4,7 @@ module OpCart
     belongs_to :shipping_address
     belongs_to :user
 
+    attr_accessor :processor_token
     accepts_nested_attributes_for :line_items
 
     validates :total, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
@@ -23,17 +24,15 @@ module OpCart
     end
 
     def charge_customer
-      customer = Stripe::Customer.create(
-        card: card_token,
-        email: user.email
-      )
+      customer = Customer.find_or_create_by user: user
+      customer.update_card processor_token
 
       # TODO Create shipping address
 
       charge = Stripe::Charge.create(
         amount: total,
         currency: "usd",
-        customer: customer.id
+        customer: customer.processor_token
       )
       #TODO: Mark order as charged
       # update_attribute :charged, true if charge.captured
