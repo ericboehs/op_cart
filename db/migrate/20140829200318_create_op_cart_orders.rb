@@ -4,6 +4,7 @@ class CreateOpCartOrders < ActiveRecord::Migration
       t.integer :total,                null: false
       t.integer :tax_amount,        default: 0
       t.string :status,                null: false
+      t.json :processor_response,      null: false
       t.references :shipping_address, index: true, null: false
       t.references :user, index: true, null: false
 

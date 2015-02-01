@@ -13,3 +13,11 @@ en:
         locality: "City"
         region: "State"
         postal_code: "Zip Code"
+
+  activerecord:
+    errors:
+      models:
+        op_cart/order:
+          attributes:
+            line_items:
+              blank: "You must add at least one item to your order."
