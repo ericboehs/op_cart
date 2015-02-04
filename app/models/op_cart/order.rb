@@ -14,6 +14,7 @@ module OpCart
     validates :line_items, presence: true
     validates :shipping_address, associated: true
     validates :user, presence: true
+    validate :validate_plan_addons_included
 
     before_validation :set_total
     before_validation -> { self.status = :pending }, unless: :status?
@@ -23,6 +24,19 @@ module OpCart
 
     def set_total
       self.total = line_items.reduce(0) { |total, line_item| total += line_item.total }
+    end
+
+    def validate_plan_addons_included
+      unless line_items.flat_map do |li|
+        if li.sellable.is_a?(Plan) && (addons = li.sellable.plan_addons).present?
+          addons.map do |addon|
+            addon_li = line_items.select{|pali| pali.sellable == addon.product }
+            addon_li.count == 1 && addon_li[0].quantity == li.quantity
+          end
+        end
+      end.compact.all?
+        self.errors.add :base, 'Plan addon(s) missing'
+      end
     end
 
     def charge_customer

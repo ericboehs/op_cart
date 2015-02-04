@@ -1,5 +1,6 @@
 module OpCart
   class Plan < ActiveRecord::Base
+    has_many :plan_addons
     belongs_to :user
 
     before_validation -> { self.interval_count = 1 }, unless: :interval_count?
@@ -19,6 +20,10 @@ module OpCart
 
     def processor_object
       @processor_object ||= Stripe::Plan.retrieve processor_token
+    end
+
+    def addons_price
+      plan_addons.reduce(0) { |total, addon| total += addon.product.price }
     end
 
     private

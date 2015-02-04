@@ -13,7 +13,11 @@ module OpCart
     before_validation :snapshot_sellable
 
     def total
-      (unit_price || sellable.price) * quantity
+      if sellable.is_a? Plan
+        0
+      else
+        (unit_price || sellable.price) * quantity
+      end
     end
 
     private

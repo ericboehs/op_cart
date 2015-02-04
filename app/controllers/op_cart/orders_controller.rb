@@ -6,6 +6,8 @@ module OpCart
     def new
       @products = Product.all
       @order = Order.new
+      @order.line_items << LineItem.new
+      @plan = Plan.purchasable.find(params[:plan_id]) if params[:plan_id]
       @user = current_user || User.new
       @card = current_user.try(:customer).try :default_card
       @shipping_address = @user.shipping_addresses.first || @user.shipping_addresses.new
@@ -59,9 +61,12 @@ module OpCart
       @line_items = OpenStruct.new(quantities_json: line_items_params[:quantities_json] || {})
       if @line_items.quantities_json.present?
         li_quantities_json = JSON.parse @line_items.quantities_json
-        li_quantities_json.each do |product_id, quantity|
-          @order.line_items <<
-            LineItem.new(sellable: Product.find(product_id), quantity: quantity)
+        li_quantities_json.each do |plan_id, quantity|
+          plan = Plan.find plan_id
+          @order.line_items << LineItem.new(sellable: plan, quantity: quantity)
+          plan.plan_addons.each do |addon|
+            @order.line_items << LineItem.new(sellable: addon.product, quantity: quantity)
+          end
         end
       end
     end
