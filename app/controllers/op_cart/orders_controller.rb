@@ -105,7 +105,7 @@ module OpCart
 
     def add_shipping_address
       @order.shipping_address = @shipping_address = ShippingAddress.new(
-        shipping_address_params.merge user_id: @user.try(:id)
+        shipping_address_params.merge user: @user
       )
     end
   end
