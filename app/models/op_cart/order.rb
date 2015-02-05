@@ -43,7 +43,7 @@ module OpCart
       customer = Customer.find_or_create_by user: user
       if processor_token.present?
         customer.update_card processor_token
-        processor_token = nil
+        self.processor_token = nil
       end
 
       self.processor_response = Stripe::Charge.create(
@@ -53,6 +53,7 @@ module OpCart
       ).to_hash
       self.status = :paid if processor_response['captured']
     rescue Stripe::InvalidRequestError, Stripe::CardError => e
+      self.processor_token = nil
       if e.try(:code) == 'card_declined'
         self.status = :payment_declined
       end
