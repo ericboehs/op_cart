@@ -1,6 +1,7 @@
 module OpCart
   class Order < ActiveRecord::Base
     has_many :line_items
+    has_many :subscriptions
     belongs_to :shipping_address
     belongs_to :user
 
@@ -19,6 +20,7 @@ module OpCart
     before_validation :set_total
     before_validation -> { self.status = :pending }, unless: :status?
     before_save :charge_customer, if: -> { self.status == 'pending' }
+    before_create :create_subscriptions
 
     private
 
@@ -40,7 +42,6 @@ module OpCart
     end
 
     def charge_customer
-      customer = Customer.find_or_create_by user: user
       if processor_token.present?
         customer.update_card processor_token
         self.processor_token = nil
@@ -68,6 +69,18 @@ module OpCart
 
       self.errors.add :card_error, (message || e.message)
       false
+    end
+
+    def create_subscriptions
+      line_items.each do |li|
+        if li.sellable.is_a? Plan
+          subscriptions.new customer: customer, plan: li.sellable, quantity: li.quantity
+        end
+      end
+    end
+
+    def customer
+      @customer ||= Customer.find_or_create_by user: user
     end
   end
 end
