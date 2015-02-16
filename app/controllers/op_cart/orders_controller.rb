@@ -2,6 +2,7 @@ module OpCart
   class OrdersController < ApplicationController
     # before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
     before_action :set_order, only: [:show, :edit, :update, :destroy]
+    decorates_assigned :order, :orders if defined? decorates_assigned
 
     def new
       @products = Product.all
