@@ -1,6 +1,6 @@
 module OpCart
   class OrdersController < ApplicationController
-    # before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
+    before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
     before_action :set_order, only: [:show, :edit, :update, :destroy]
     if defined? decorates_assigned
       decorates_assigned :order, :orders, :products, :plan, :user, :card, :shipping_address
