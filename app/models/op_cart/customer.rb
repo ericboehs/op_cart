@@ -1,6 +1,7 @@
 module OpCart
   class Customer < ActiveRecord::Base
     has_many :cards
+    has_many :subscriptions
     belongs_to :default_card, class_name: 'OpCart::Card'
     belongs_to :user
 

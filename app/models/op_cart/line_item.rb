@@ -12,6 +12,9 @@ module OpCart
     before_validation :set_unit_price
     before_validation :snapshot_sellable
 
+    scope :products, -> { where sellable_type: 'OpCart::Product' }
+    scope :plans, -> { where sellable_type: 'OpCart::Plan' }
+
     def total
       if sellable.is_a? Plan
         0
