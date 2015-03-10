@@ -14,7 +14,7 @@ module OpCart
     validates :status, presence: true
     validates :line_items, presence: true
     validates :shipping_address, associated: true
-    validates :user, presence: true
+    validates :user, associated: true
     validate :validate_plan_addons_included
 
     before_validation :set_total
