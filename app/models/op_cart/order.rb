@@ -41,6 +41,12 @@ module OpCart
       end
     end
 
+    def charge_description
+      line_items.select {|li| li.sellable_type == "OpCart::Product" }
+        .map{|li| "#{li.quantity} x #{li.sellable.name}" }
+        .to_sentence
+    end
+
     def charge_customer
       if processor_token.present?
         customer.update_card processor_token
@@ -49,6 +55,7 @@ module OpCart
 
       self.processor_response = Stripe::Charge.create(
         amount: total,
+        description: charge_description,
         currency: "usd",
         customer: customer.processor_token
       ).to_hash
