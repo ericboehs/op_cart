@@ -73,7 +73,7 @@ module OpCart
         li_quantities_json.each do |plan_id, quantity|
           plan = Plan.find plan_id
           @order.line_items << LineItem.new(sellable: plan, quantity: quantity)
-          plan.plan_addons.each do |addon|
+          plan.plan_addons.purchasable.each do |addon|
             @order.line_items << LineItem.new(sellable: addon.product, quantity: quantity)
           end
         end

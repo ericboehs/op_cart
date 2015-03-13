@@ -23,7 +23,7 @@ module OpCart
     end
 
     def addons_price
-      plan_addons.reduce(0) { |total, addon| total += addon.product.price }
+      plan_addons.purchasable.reduce(0) { |total, addon| total += addon.product.price }
     end
 
     private

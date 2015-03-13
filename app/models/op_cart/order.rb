@@ -30,7 +30,7 @@ module OpCart
 
     def validate_plan_addons_included
       unless line_items.flat_map do |li|
-        if li.sellable.is_a?(Plan) && (addons = li.sellable.plan_addons).present?
+        if li.sellable.is_a?(Plan) && (addons = li.sellable.plan_addons.purchasable).present?
           addons.map do |addon|
             addon_li = line_items.select{|pali| pali.sellable == addon.product }
             addon_li.count == 1 && addon_li[0].quantity == li.quantity
