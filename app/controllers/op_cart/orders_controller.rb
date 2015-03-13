@@ -17,7 +17,6 @@ module OpCart
       @order.user = current_user || User.new
       @order.line_items << LineItem.new
       @order.shipping_address = @order.user.shipping_addresses.first || @order.user.shipping_addresses.new
-      @card = current_user.try(:customer).try :default_card
     end
 
     def create
