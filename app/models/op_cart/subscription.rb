@@ -37,11 +37,11 @@ module OpCart
     end
 
     def update_subscription
-      subscriptions_attributes = {}
-      subscriptions_attributes[:quantity] = quantity if quantity_changed?
-      subscriptions_attributes[:trial_end] = trial_ended_at.to_i if trial_ended_at_changed?
-      subscriptions_attributes[:plan] = plan.processor_token if plan_id_changed?
-      update_local_object customer.processor_object.subscriptions.create(subscriptions_attributes)
+      subscription = customer.processor_object.subscriptions.retrieve(processor_token)
+      subscription.quantity = quantity if quantity_changed?
+      subscription.trial_end = trial_ended_at.to_i if trial_ended_at_changed?
+      subscription.plan = plan.processor_token if plan_id_changed?
+      update_local_object subscription.save
     rescue Stripe::InvalidRequestError => e
       if e.param
         self.errors.add e.param, e.message

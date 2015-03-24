@@ -81,7 +81,12 @@ module OpCart
     def create_subscriptions
       line_items.each do |li|
         if li.sellable.is_a? Plan
-          subscriptions.new customer: customer, plan: li.sellable, quantity: li.quantity
+          es = existing_subscription = customer.subscriptions.where(plan: li.sellable).first
+          if existing_subscription.present?
+            es.update_attributes quantity: es.quantity + li.quantity
+          else
+            subscriptions.new customer: customer, plan: li.sellable, quantity: li.quantity
+          end
         end
       end
     end
