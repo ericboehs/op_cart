@@ -6,6 +6,7 @@ module OpCart
     belongs_to :user
 
     attr_accessor :processor_token
+    attr_accessor :coupon
     accepts_nested_attributes_for :line_items
 
     validates :total, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
@@ -16,6 +17,7 @@ module OpCart
     validates :shipping_address, associated: true
     validates :user, associated: true
     validate :validate_plan_addons_included
+    validate :validate_coupon_exists, if: "coupon.present?"
 
     before_validation :set_total
     before_validation -> { self.status = :pending }, unless: :status?
@@ -39,6 +41,12 @@ module OpCart
       end.compact.all?
         self.errors.add :base, 'Plan addon(s) missing'
       end
+    end
+
+    def validate_coupon_exists
+      Stripe::Coupon.retrieve(coupon)
+    rescue Stripe::InvalidRequestError => e
+      self.errors.add :coupon, 'does not exist'
     end
 
     def charge_description
@@ -85,7 +93,7 @@ module OpCart
           if existing_subscription.present?
             es.update_attributes quantity: es.quantity + li.quantity
           else
-            subscriptions.new customer: customer, plan: li.sellable, quantity: li.quantity
+            subscriptions.new customer: customer, plan: li.sellable, quantity: li.quantity, coupon: coupon
           end
         end
       end

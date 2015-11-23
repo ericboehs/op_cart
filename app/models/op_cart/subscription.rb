@@ -24,7 +24,7 @@ module OpCart
     private
 
     def create_subscription
-      subscriptions_attributes = { plan: plan.processor_token, quantity: quantity }
+      subscriptions_attributes = { plan: plan.processor_token, quantity: quantity, coupon: coupon }
       subscriptions_attributes[:trial_end] = trial_ended_at.to_i if trial_ended_at
       update_local_object customer.processor_object.subscriptions.create(subscriptions_attributes)
     rescue Stripe::InvalidRequestError => e
